@@ -121,6 +121,7 @@ const combinations = [
 let userBalance = {};
 
 const tmi = require('tmi.js');
+const { username } = require('tmi.js/lib/utils');
 
 // Define configuration options
 const opts = {
@@ -155,11 +156,14 @@ if (commandName === '!gift') {
   const username = user.username;
   if (!userBalance[username]) {
     userBalance[username] = 1000; // Initial balance
-    client.say(channel, `${username}, you have been gifted with a balance of 1000 coins.`);
+    client.say(target, `${username}, you have been gifted 1000 coins.`);
   } else {
-    client.say(channel, `${username}, you already recieved your gift`);
+    client.say(target, `${username}, you already recieved your gift`);
   }
-}
+} else if ( commandName === '!balance'){
+  const username = user.username;
+  client.say(target, `${username}, your balance is ${userBalance[username]}`);
+} //username is not defined i need to fix this !!!!
 
 
 
@@ -169,6 +173,19 @@ if (commandName === '!gift') {
     const num = randomIndex();
     client.say(target, `You rolled ${num}`);
     console.log(`* Executed ${commandName} command`);
+    /*if(num = "Jebaited Jebaited Jebaited"){
+      userBalance[username] *= 0.5;
+    } else if (num = "Kappa Kappa Kappa") {
+      userBalance[username] *= 1.1;
+    } else if (num = "DansGame DansGame DansGame"){
+      userBalance[username] *= 1.5;
+    } else if (num = "MaxLOL MaxLOL MaxLOL"){
+      userBalance[username] *= 1.7;
+    } else if (num = "TriHard TriHard TriHard"){
+      userBalance[username] *= 5;
+    } else if (num = "Kreygasm Kreygasm Kreygasm"){
+      userBalance[username] *= 10;
+    }*/
   } else if (commandName === '!odds'){
     client.say(target, 'Odds: Jebaited = 0.5x Kappa = 1.1x DansGame = 1.5x MaxLOL = 1.7x TriHard = 5x Kreygasm = 10x');
   } else {
