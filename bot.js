@@ -118,22 +118,42 @@ const combinations = [
   "Kreygasm Kreygasm Kreygasm",
   "Kreygasm Kreygasm Kreygasm",
 ];
-let userBalance = {};
 
+
+let userBalance = ''
 const tmi = require('tmi.js');
 const { username } = require('tmi.js/lib/utils');
-
+const {createPool} = require('mysql');
 // Define configuration options
 const opts = {
   identity: {
     username: 'kianuwufurry',
-    password: 'oauth:u430n7dvp4ws6stzs9xzscoyh09y5j'
+    password: 'oauth:tti8h6kg1evru07i5g257xw4oajpsv'
   },
   channels: [
     'kianuwufurry'
   ]
 };
+//sql database
+const pool = createPool({
+  host: "localhost",
+  user: "root",
+  password: "5551",
+  database: "twitch_bot_game",
+  connectionLimit: 10
+})
 
+//inserts chatters into database
+
+//function to add 1000 initial points
+function insertUsernameIntoDatabase(username) {
+  pool.query(`UPDATE user_data SET points = points + 1000 WHERE username = ${username}`, (err, result, fields) => {
+    if(err){
+      return console.log(err);
+    };
+    userBalance = result;
+    
+  })}; 
 // Create a client with our options
 const client = new tmi.client(opts);
 
@@ -147,22 +167,63 @@ client.connect();
 // Called every time a message comes in
 function onMessageHandler (target, user, msg, self) {
   if (self) { return; } // Ignore messages from the bot
-
+  const senderUsername = user.username;
   // Remove whitespace from chat message
   const [commandName, ...args] = msg.split(' ');
+  
+//adds users to database
+pool.query(
+  'SELECT COUNT(*) AS user_count FROM user_data WHERE username = ?',
+  [senderUsername],
+  (error, results) => {
+    if (error) {
+      console.error(`Error checking for ${senderUsername} in the database: ${error}`);
+      return;
+    }
+
+    const userCount = results[0].user_count;
+
+    // If the user is not in the database, insert them
+    if (userCount === 0) {
+      // Insert the username into the database
+      pool.query(
+        'INSERT INTO user_data (username) VALUES (?)',
+        [senderUsername],
+        (insertError) => {
+          if (insertError) {
+            console.error(`Error inserting ${senderUsername} into the database: ${insertError}`);
+          } else {
+            console.log(`User ${senderUsername} added to the database.`);
+          }
+        }
+      );
+    }
+  }
+);
+
+
 
 //gives people their initial balance
 if (commandName === '!gift') {
-  const username = user.username;
-  if (!userBalance[username]) {
-    userBalance[username] = 1000; // Initial balance
-    client.say(target, `${username}, you have been gifted 1000 coins.`);
+  pool.query('SELECT points FROM user_data WHERE username = ?',
+    [senderUsername], // Use senderUsername here
+    (error, results) => {
+      if (error) {
+        console.error(error);
+        return;
+      }
+  if (results.length <= 0) {
+    //userBalance[senderUsername] = 1000; // Initial balance
+    insertUsernameIntoDatabase(senderUsername);
+
+    client.say(target, `${senderUsername}, you have been gifted 1000 coins.`);
   } else {
-    client.say(target, `${username}, you already recieved your gift`);
-  }
-} else if ( commandName === '!balance'){
-  const username = user.username;
-  client.say(target, `${username}, your balance is ${userBalance[username]}`);
+    client.say(target, `${senderUsername}, you already recieved your gift`);
+  }})
+  
+  
+  if ( commandName === '!balance'){
+  client.say(target, `${senderUsername}, your balance is ${userBalance[senderUsername]}`);
 } //username is not defined i need to fix this !!!!
 
 
@@ -205,4 +266,4 @@ function randomIndex(){
 // Called every time the bot connects to Twitch chat
 function onConnectedHandler (addr, port) {
   console.log(`* Connected to ${addr}:${port}`);
-}
+}}
