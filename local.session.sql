@@ -1,1 +1,1 @@
-SELECT * FROM user_data WHERE points; 
+SELECT * FROM user_data;

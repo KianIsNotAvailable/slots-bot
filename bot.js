@@ -206,11 +206,13 @@ function spin(senderUsername, points, pool, client, target){
    (err, result, fields) => {
    if(err){
      return console.log(err);
-   };
-if(points > result){
-  client.say(target,'You do not have enough money for that.');
-} else if (points == 0) {
+   } 
+   else if(points > result[0].points){
+  client.say(target,'You do not have enough points for that.');
+  return
+} else if (isNaN(points) || points === 0 || points === null || points === NaN || points === ' ') {
   client.say(target, `You cant gamble with nothing`)
+  return
 } else {
   const num = randomIndex();
   client.say(target, `You rolled ${num}`);
@@ -264,6 +266,13 @@ if(points > result){
     if(err){
       return console.log(err);
     }});
+  } else {
+    pool.query(`UPDATE user_data SET points = points - ${points} WHERE username = ?`, 
+    [senderUsername],
+    (err, result, fields) => {
+    if(err){
+      return console.log(err);
+    }});
   }
 }
 })}
@@ -271,13 +280,22 @@ if(points > result){
 
 // Gives people their initial balance
 if (commandName === '!gift') {
+  pool.query('SELECT points FROM user_data WHERE username = ?', [senderUsername], (err, result, fields) => {
+    if (err) {
+      return console.log(err);
+    }
+    let balance = result[0].points;
+  })
+
+  if(balance === 0){
   pool.query('UPDATE user_data SET points = points + 1000 WHERE username = ?', [senderUsername], (err, result, fields) => {
     if (err) {
       return console.log(err);
     }
-    client.say(target, `${senderUsername}, you have been gifted 1000 coins.`);
+    client.say(target, `${senderUsername}, you have been gifted 1000 points.`);
     console.log(`* Executed ${commandName} command`);
-  });
+  })} 
+  client.say(target, `${senderUsername}, You already had your gift. You can have another when you run out of points`);
 } else if (commandName === '!balance') {
   // Check balance
   console.log(`* Executed ${commandName} command`);
@@ -288,7 +306,7 @@ if (commandName === '!gift') {
     if (result.length > 0) {
       client.say(target, `${senderUsername}, your balance is ${result[0].points} points.`);
     } else {
-      client.say(target, `${senderUsername}, you have no balance.`);
+      client.say(target, `${senderUsername}, you have no points.`);
     }
   });
 } else if (commandName === '!spin') {
@@ -300,6 +318,12 @@ if (commandName === '!gift') {
   // Check multipliers
   console.log(`* Executed ${commandName} command`);
   client.say(target, 'Odds: Jebaited = 0.5x Kappa = 1.1x DansGame = 1.5x MaxLOL = 1.7x TriHard = 5x Kreygasm = 10x');
+} else if (commandName === '!reset'){
+pool.query(`UPDATE user_data SET points = 1000 WHERE username = ?`, [senderUsername],
+ (err, result, fields) => {
+  if (err) {
+    return console.log(err);
+  }})
 } else {
   console.log(`* Unknown command ${commandName}`);
 }
