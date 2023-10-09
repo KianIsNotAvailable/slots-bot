@@ -143,17 +143,9 @@ const pool = createPool({
   connectionLimit: 10
 })
 
-//inserts chatters into database
 
-//function to add 1000 initial points
-function insertUsernameIntoDatabase(username) {
-  pool.query(`UPDATE user_data SET points = points + 1000 WHERE username = ${username}`, (err, result, fields) => {
-    if(err){
-      return console.log(err);
-    };
-    userBalance = result;
-    
-  })}; 
+
+
 // Create a client with our options
 const client = new tmi.client(opts);
 
@@ -203,59 +195,116 @@ pool.query(
 
 
 
-//gives people their initial balance
-if (commandName === '!gift') {
+
+
+
+
+
+function spin(senderUsername, points, pool, client, target){
   pool.query('SELECT points FROM user_data WHERE username = ?',
-    [senderUsername], // Use senderUsername here
-    (error, results) => {
-      if (error) {
-        console.error(error);
-        return;
-      }
-  if (results.length <= 0) {
-    //userBalance[senderUsername] = 1000; // Initial balance
-    insertUsernameIntoDatabase(senderUsername);
+  [senderUsername],
+   (err, result, fields) => {
+   if(err){
+     return console.log(err);
+   };
+if(points > result){
+  client.say(target,'You do not have enough money for that.');
+} else if (points == 0) {
+  client.say(target, `You cant gamble with nothing`)
+} else {
+  const num = randomIndex();
+  client.say(target, `You rolled ${num}`);
 
-    client.say(target, `${senderUsername}, you have been gifted 1000 coins.`);
-  } else {
-    client.say(target, `${senderUsername}, you already recieved your gift`);
-  }})
-  
-  
-  if ( commandName === '!balance'){
-  client.say(target, `${senderUsername}, your balance is ${userBalance[senderUsername]}`);
-} //username is not defined i need to fix this !!!!
+  if(num === "Jebaited Jebaited Jebaited"){
+    pool.query(`UPDATE user_data SET points = points + ${points * 0.5} WHERE username = ?`, 
+    [senderUsername],
+    (err, result, fields) => {
+    if(err){
+      return console.log(err);
+    }});
 
+  } else if (num === "Kappa Kappa Kappa") {
+    pool.query(`UPDATE user_data SET points = points + ${points * 1.1} WHERE username = ?`, 
+    [senderUsername],
+    (err, result, fields) => {
+    if(err){
+      return console.log(err);
+    }});
+    
+  } else if (num === "DansGame DansGame DansGame"){
+    pool.query(`UPDATE user_data SET points = points + ${points * 1.5} WHERE username = ?`, 
+    [senderUsername],
+    (err, result, fields) => {
+    if(err){
+      return console.log(err);
+    }});
 
+    
+  } else if (num === "MaxLOL MaxLOL MaxLOL"){
+    pool.query(`UPDATE user_data SET points = points + ${points * 1.7} WHERE username = ?`, 
+    [senderUsername],
+    (err, result, fields) => {
+    if(err){
+      return console.log(err);
+    }});
 
-  // If the command is known, let's execute it
-
-  if (commandName === '!spin') {
-    const num = randomIndex();
-    client.say(target, `You rolled ${num}`);
-    console.log(`* Executed ${commandName} command`);
-    /*if(num = "Jebaited Jebaited Jebaited"){
-      userBalance[username] *= 0.5;
-    } else if (num = "Kappa Kappa Kappa") {
-      userBalance[username] *= 1.1;
-    } else if (num = "DansGame DansGame DansGame"){
-      userBalance[username] *= 1.5;
-    } else if (num = "MaxLOL MaxLOL MaxLOL"){
-      userBalance[username] *= 1.7;
-    } else if (num = "TriHard TriHard TriHard"){
-      userBalance[username] *= 5;
-    } else if (num = "Kreygasm Kreygasm Kreygasm"){
-      userBalance[username] *= 10;
-    }*/
-  } else if (commandName === '!odds'){
-    client.say(target, 'Odds: Jebaited = 0.5x Kappa = 1.1x DansGame = 1.5x MaxLOL = 1.7x TriHard = 5x Kreygasm = 10x');
-  } else {
-    console.log(`* Unknown command ${commandName}`);
+    
+  } else if (num === "TriHard TriHard TriHard"){
+    pool.query(`UPDATE user_data SET points = points + ${points * 5} WHERE username = ?`, 
+    [senderUsername],
+    (err, result, fields) => {
+    if(err){
+      return console.log(err);
+    }});
+    
+  } else if (num === "Kreygasm Kreygasm Kreygasm"){
+    pool.query(`UPDATE user_data SET points = points + ${points * 10} WHERE username = ?`, 
+    [senderUsername],
+    (err, result, fields) => {
+    if(err){
+      return console.log(err);
+    }});
   }
 }
+})}
+ // If the command is known, let's execute it
 
-// Function called when the "dice" command is issued
-
+// Gives people their initial balance
+if (commandName === '!gift') {
+  pool.query('UPDATE user_data SET points = points + 1000 WHERE username = ?', [senderUsername], (err, result, fields) => {
+    if (err) {
+      return console.log(err);
+    }
+    client.say(target, `${senderUsername}, you have been gifted 1000 coins.`);
+    console.log(`* Executed ${commandName} command`);
+  });
+} else if (commandName === '!balance') {
+  // Check balance
+  console.log(`* Executed ${commandName} command`);
+  pool.query('SELECT points FROM user_data WHERE username = ?', [senderUsername], (err, result, fields) => {
+    if (err) {
+      return console.log(err);
+    }
+    if (result.length > 0) {
+      client.say(target, `${senderUsername}, your balance is ${result[0].points} points.`);
+    } else {
+      client.say(target, `${senderUsername}, you have no balance.`);
+    }
+  });
+} else if (commandName === '!spin') {
+  // Spin the slot machine
+  const points = parseInt(msg.split(' ')[1], 10);
+  spin(senderUsername, points, pool, client, target);
+  console.log(`* Executed ${commandName} command`);
+} else if (commandName === '!odds') {
+  // Check multipliers
+  console.log(`* Executed ${commandName} command`);
+  client.say(target, 'Odds: Jebaited = 0.5x Kappa = 1.1x DansGame = 1.5x MaxLOL = 1.7x TriHard = 5x Kreygasm = 10x');
+} else {
+  console.log(`* Unknown command ${commandName}`);
+}
+// Function called when the "spin" command is issued
+}
 function randomIndex(){
   var index = Math.floor(Math.random() * (combinations.length) + 1);
   console.log(combinations[index])
@@ -266,4 +315,4 @@ function randomIndex(){
 // Called every time the bot connects to Twitch chat
 function onConnectedHandler (addr, port) {
   console.log(`* Connected to ${addr}:${port}`);
-}}
+}
