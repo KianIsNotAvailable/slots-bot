@@ -315,13 +315,14 @@ function spin(senderUsername, points, pool, client, target){
  // If the command is known, let's execute it
 
 // Gives people their initial balance
+//checks how many  points they have
 if (commandName === '!gift') {
   pool.query('SELECT points FROM user_data WHERE username = ?', [senderUsername], (err, result, fields) => {
     if (err) {
       return console.log(err);
     }
     
-  
+  //if their points === 0, they can recieve a gift
   let balance = result[0].points;
   if(balance === 0){
   pool.query('UPDATE user_data SET points = points + 1000 WHERE username = ?', [senderUsername], (err, result, fields) => {
