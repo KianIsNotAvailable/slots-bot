@@ -36,6 +36,42 @@ const combinations = [
   "TriHard DansGame Jebaited",
   "TriHard DansGame Kreygasm",
   "TriHard Jebaited Kreygasm",
+  "Kappa TriHard MaxLOL",
+  "Kappa TriHard DansGame",
+  "Kappa TriHard Jebaited",
+  "Kappa TriHard Kreygasm",
+  "Kappa MaxLOL DansGame",
+  "Kappa MaxLOL Jebaited",
+  "Kappa MaxLOL Kreygasm",
+  "Kappa DansGame Jebaited",
+  "Kappa DansGame Kreygasm",
+  "Kappa Jebaited Kreygasm",
+  "TriHard MaxLOL DansGame",
+  "TriHard MaxLOL Jebaited",
+  "TriHard MaxLOL Kreygasm",
+  "TriHard DansGame Jebaited",
+  "TriHard DansGame Kreygasm",
+  "TriHard Jebaited Kreygasm",
+  "MaxLOL DansGame Jebaited",
+  "MaxLOL DansGame Kreygasm",
+  "MaxLOL Jebaited Kreygasm",
+  "DansGame Jebaited Kreygasm",
+  "Kappa TriHard MaxLOL",
+  "Kappa TriHard DansGame",
+  "Kappa TriHard Jebaited",
+  "Kappa TriHard Kreygasm",
+  "Kappa MaxLOL DansGame",
+  "Kappa MaxLOL Jebaited",
+  "Kappa MaxLOL Kreygasm",
+  "Kappa DansGame Jebaited",
+  "Kappa DansGame Kreygasm",
+  "Kappa Jebaited Kreygasm",
+  "TriHard MaxLOL DansGame",
+  "TriHard MaxLOL Jebaited",
+  "TriHard MaxLOL Kreygasm",
+  "TriHard DansGame Jebaited",
+  "TriHard DansGame Kreygasm",
+  "TriHard Jebaited Kreygasm",
   "MaxLOL DansGame Jebaited",
   "MaxLOL DansGame Kreygasm",
   "MaxLOL Jebaited Kreygasm",
@@ -284,9 +320,9 @@ if (commandName === '!gift') {
     if (err) {
       return console.log(err);
     }
-    let balance = result[0].points;
-  })
-
+    
+  
+  let balance = result[0].points;
   if(balance === 0){
   pool.query('UPDATE user_data SET points = points + 1000 WHERE username = ?', [senderUsername], (err, result, fields) => {
     if (err) {
@@ -294,8 +330,10 @@ if (commandName === '!gift') {
     }
     client.say(target, `${senderUsername}, you have been gifted 1000 points.`);
     console.log(`* Executed ${commandName} command`);
-  })} 
+  })} else {
   client.say(target, `${senderUsername}, You already had your gift. You can have another when you run out of points`);
+}
+})
 } else if (commandName === '!balance') {
   // Check balance
   console.log(`* Executed ${commandName} command`);
