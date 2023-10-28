@@ -163,11 +163,11 @@ const {createPool} = require('mysql');
 // Define configuration options
 const opts = {
   identity: {
-    username: 'kianuwufurry',
-    password: 'oauth:tti8h6kg1evru07i5g257xw4oajpsv'
+    username: 'kianchatbot',
+    password: 'oauth:1c6b98s9duudfllqw5hv0wmm58r1wx'
   },
   channels: [
-    'kianuwufurry'
+    'kianchatbot'
   ]
 };
 //sql database
