@@ -81,9 +81,9 @@ Your bot is now active in your Twitch channel's chat.
 
 ## Commands
 Here are the available commands
-!spin - do !spin followed by a number. The number is the amount of points you are gambling with. Without a number you can't spin.
-!balance - will show you how  many points you have.
-!gift - will give users with 0 points 1000 points.
-!odds - will show the multiplier of each twitch emote.
+- !spin - do !spin followed by a number. The number is the amount of points you are gambling with. Without a number you can't spin.
+- !balance - will show you how  many points you have.
+- !gift - will give users with 0 points 1000 points.
+- !odds - will show the multiplier of each twitch emote.
 
 
