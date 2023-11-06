@@ -2,7 +2,7 @@
 This is a Twitch chat bot built using Node.js and MySQL, designed to allow chat users to play a slots minigame in the chat.
 With this bot you can use commands to gamble your points and Check your points balance. When you get 3 of the same emote after doing !spin. 
 Your points will increase depending on the odds. If you dont get 3 of the same emote, you lose the points you gambled.
-![The bot in action](.\assets\screenshot.png)
+![The bot in action](./assets/screenshot.png)
 
 
 # Prerequisites
